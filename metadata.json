@@ -1,0 +1,5 @@
+{
+  "name": "Church Finance Tracker",
+  "description": "A modern web application for managing church finances, including transactions, expenses, and reporting, inspired by a sleek, dark-themed UI.",
+  "requestFramePermissions": []
+}
