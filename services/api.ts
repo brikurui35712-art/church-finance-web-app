@@ -155,16 +155,22 @@ const api = {
             }));
         return Promise.resolve(processed);
     },
-    confirmTransaction: (id: string): Promise<{ success: true }> => {
+    confirmTransaction: (id: string, overrideData?: { description?: string, campaignName?: string, category?: TransactionCategory }): Promise<{ success: true }> => {
         const index = stagedTransactions.findIndex(t => t.id === id);
         if (index > -1) {
             const stagedTx = stagedTransactions[index];
-            const campaignName = parseSmsForCampaign(stagedTx.smsMessage.body);
+            const autoCampaignName = parseSmsForCampaign(stagedTx.smsMessage.body);
+
+            const finalCampaignName = overrideData?.campaignName !== undefined ? (overrideData.campaignName || undefined) : autoCampaignName;
+            const finalCategory = overrideData?.category ?? campaignToCategory(finalCampaignName);
+            const finalDescription = (overrideData?.description && overrideData.description.trim() !== '') ? overrideData.description : stagedTx.description;
+
             const confirmedTx: Transaction = {
                 ...(stagedTx as Omit<StagedTransaction, 'smsMessage'>),
                 status: TransactionStatus.Completed,
-                campaignName: campaignName,
-                category: campaignToCategory(campaignName),
+                campaignName: finalCampaignName,
+                category: finalCategory,
+                description: finalDescription,
             };
             transactions.unshift(confirmedTx); // Add to completed transactions
             stagedTransactions.splice(index, 1); // Remove from staged

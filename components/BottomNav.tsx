@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { UserRole } from '../types';
-import { HomeIcon, ChartBarIcon, ClipboardCheckIcon, CalculatorIcon, MegaphoneIcon, CogIcon } from './icons/Icons';
+import { HomeIcon, ChartBarIcon, ClipboardCheckIcon, CalculatorIcon, MegaphoneIcon, CogIcon, CashIcon } from './icons/Icons';
 
 const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string }> = ({ to, icon, label }) => (
     <NavLink
@@ -32,6 +32,7 @@ const BottomNav: React.FC = () => {
                     {hasFinanceAccess && (
                         <>
                             <NavItem to="/reconciliation" icon={<ClipboardCheckIcon />} label="Reconcile" />
+                            <NavItem to="/cash-collections" icon={<CashIcon />} label="Cash" />
                             <NavItem to="/budget" icon={<CalculatorIcon />} label="Budget" />
                             <NavItem to="/campaigns" icon={<MegaphoneIcon />} label="Campaigns" />
                         </>
