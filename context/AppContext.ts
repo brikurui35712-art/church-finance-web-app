@@ -7,6 +7,8 @@ interface IAppContext {
     setUserRole: Dispatch<SetStateAction<UserRole>>;
     theme: Theme;
     setTheme: Dispatch<SetStateAction<Theme>>;
+    churchName: string;
+    setChurchName: Dispatch<SetStateAction<string>>;
 }
 
 export const AppContext = createContext<IAppContext>({
@@ -14,4 +16,6 @@ export const AppContext = createContext<IAppContext>({
     setUserRole: () => {},
     theme: Theme.System,
     setTheme: () => {},
+    churchName: 'Faith Church',
+    setChurchName: () => {},
 });

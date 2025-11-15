@@ -81,8 +81,46 @@ const ActiveCampaigns: React.FC<{ campaigns: Campaign[] }> = ({ campaigns }) => 
     </div>
 );
 
+const AdminSettings: React.FC = () => {
+    const { churchName, setChurchName } = useContext(AppContext);
+    const [newName, setNewName] = useState(churchName);
+    const [isSaved, setIsSaved] = useState(false);
+
+    useEffect(() => {
+        setNewName(churchName);
+    }, [churchName]);
+
+    const handleSave = () => {
+        setChurchName(newName);
+        setIsSaved(true);
+        setTimeout(() => setIsSaved(false), 2000); // Hide message after 2s
+    };
+
+    return (
+        <Card>
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">Admin Settings</h3>
+            <div className="space-y-2">
+                <label htmlFor="churchName" className="block text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Church Name
+                </label>
+                <input
+                    id="churchName"
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="w-full bg-gray-50 dark:bg-base border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:ring-primary focus:border-primary"
+                />
+            </div>
+            <div className="mt-4 flex items-center gap-4">
+                <Button onClick={handleSave}>Save Name</Button>
+                {isSaved && <p className="text-sm text-green-500 animate-fade-in">Saved!</p>}
+            </div>
+        </Card>
+    );
+};
+
 const Dashboard: React.FC = () => {
-    const { userRole } = useContext(AppContext);
+    const { userRole, churchName } = useContext(AppContext);
     const [accounts, setAccounts] = useState<Account[] | null>(null);
     const [transactions, setTransactions] = useState<Transaction[] | null>(null);
     const [stagedCount, setStagedCount] = useState<number>(0);
@@ -123,8 +161,10 @@ const Dashboard: React.FC = () => {
     const isFinanceUser = userRole === UserRole.Admin || userRole === UserRole.Treasurer;
 
     return (
-        <Page title="Dashboard">
+        <Page title={`Welcome to ${churchName}`}>
             <div className="space-y-8">
+                {userRole === UserRole.Admin && <AdminSettings />}
+
                 {isFinanceUser && stagedCount > 0 && <ReconciliationNotification count={stagedCount} />}
                 
                 {userRole === UserRole.Viewer && activeCampaigns.length > 0 && <ActiveCampaigns campaigns={activeCampaigns} />}

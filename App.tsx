@@ -16,6 +16,7 @@ import Header from './components/Header';
 
 const App: React.FC = () => {
     const [userRole, setUserRole] = useState<UserRole>(UserRole.Treasurer);
+    const [churchName, setChurchName] = useState<string>('Faith Church');
     const [theme, setTheme] = useState<Theme>(() => {
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme && Object.values(Theme).includes(storedTheme as Theme)) {
@@ -49,7 +50,9 @@ const App: React.FC = () => {
         setUserRole,
         theme,
         setTheme,
-    }), [userRole, theme]);
+        churchName,
+        setChurchName,
+    }), [userRole, theme, churchName]);
 
     const hasFinanceAccess = userRole === UserRole.Admin || userRole === UserRole.Treasurer;
 
