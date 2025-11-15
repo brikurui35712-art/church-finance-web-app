@@ -186,7 +186,14 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Recent Transactions</h3>
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Recent Transactions</h3>
+                        {isFinanceUser && (
+                             <Link to="/transactions" className="text-sm font-medium text-primary hover:underline">
+                                View All
+                            </Link>
+                        )}
+                    </div>
                     <Card>
                         {transactions ? (
                             transactions.map(tx => <TransactionItem key={tx.id} tx={tx} />)

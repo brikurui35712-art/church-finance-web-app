@@ -11,6 +11,7 @@ import Reports from './pages/Reports';
 import Budget from './pages/Budget';
 import Campaigns from './pages/Campaigns';
 import Settings from './pages/Settings';
+import AllTransactions from './pages/AllTransactions';
 import BottomNav from './components/BottomNav';
 import Header from './components/Header';
 
@@ -73,6 +74,7 @@ const App: React.FC = () => {
                             <Route path="/expenses" element={hasFinanceAccess ? <Expenses /> : <Navigate to="/dashboard" replace />} />
                             <Route path="/budget" element={hasFinanceAccess ? <Budget /> : <Navigate to="/dashboard" replace />} />
                             <Route path="/campaigns" element={hasFinanceAccess ? <Campaigns /> : <Navigate to="/dashboard" replace />} />
+                            <Route path="/transactions" element={hasFinanceAccess ? <AllTransactions /> : <Navigate to="/dashboard" replace />} />
                         </Routes>
                     </main>
                     <BottomNav />

@@ -1,5 +1,4 @@
-
-import { Account, Transaction, TransactionType, TransactionStatus, StagedTransaction, Expense, ExpenseStatus, MonthlyReportData, CashBatch, CashEntry, Budget, BudgetItem, Campaign, TransactionCategory } from '../types';
+import { Account, Transaction, TransactionType, TransactionStatus, StagedTransaction, Expense, ExpenseStatus, MonthlyReportData, CashBatch, CashEntry, Budget, BudgetItem, Campaign, TransactionCategory, SmsMessage } from '../types';
 
 const KSH = 'KSH';
 
@@ -146,7 +145,7 @@ const campaignToCategory = (campaignName?: string): TransactionCategory => {
 const api = {
     getAccounts: (): Promise<Account[]> => Promise.resolve(accounts),
     getRecentTransactions: (): Promise<Transaction[]> => Promise.resolve(transactions.slice(0, 5)),
-    getAllCompletedTransactions: (): Promise<Transaction[]> => Promise.resolve(transactions.filter(t => t.status === TransactionStatus.Completed)),
+    getAllCompletedTransactions: (): Promise<Transaction[]> => Promise.resolve(transactions.filter(t => t.status === TransactionStatus.Completed).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())),
     getStagedTransactions: (): Promise<StagedTransaction[]> => {
         const processed = stagedTransactions
             .filter(t => t.status === TransactionStatus.Staged)
@@ -167,11 +166,13 @@ const api = {
             const finalDescription = (overrideData?.description && overrideData.description.trim() !== '') ? overrideData.description : stagedTx.description;
 
             const confirmedTx: Transaction = {
-                ...(stagedTx as Omit<StagedTransaction, 'smsMessage'>),
+                ...stagedTx,
                 status: TransactionStatus.Completed,
                 campaignName: finalCampaignName,
                 category: finalCategory,
                 description: finalDescription,
+                revertible: true, // Mark as revertible
+                smsMessage: stagedTx.smsMessage, // Explicitly carry over SMS message
             };
             transactions.unshift(confirmedTx); // Add to completed transactions
             stagedTransactions.splice(index, 1); // Remove from staged
@@ -182,6 +183,27 @@ const api = {
         const index = stagedTransactions.findIndex(t => t.id === id);
         if (index > -1) stagedTransactions.splice(index, 1); // Just remove for this mock
         return Promise.resolve({ success: true });
+    },
+     revertTransaction: (id: string): Promise<{ success: true }> => {
+        const index = transactions.findIndex(t => t.id === id);
+        if (index > -1) {
+            const txToRevert = transactions[index];
+            if (!txToRevert.revertible || !txToRevert.smsMessage) {
+                return Promise.reject(new Error("Transaction is not revertible."));
+            }
+
+            const revertedStagedTx: StagedTransaction = {
+                ...txToRevert,
+                status: TransactionStatus.Staged,
+                smsMessage: txToRevert.smsMessage,
+            };
+
+            stagedTransactions.unshift(revertedStagedTx); // Add to staged
+            transactions.splice(index, 1); // Remove from completed
+            
+            return Promise.resolve({ success: true });
+        }
+        return Promise.reject(new Error("Transaction not found."));
     },
     getExpensesToApprove: (): Promise<Expense[]> => Promise.resolve(expenses.filter(e => e.status === ExpenseStatus.Pending)),
     approveExpense: (id: string): Promise<{ success: true }> => {
@@ -214,6 +236,7 @@ const api = {
             type: TransactionType.Credit,
             status: TransactionStatus.Completed,
             category: TransactionCategory.Offering, // Assume cash is offering
+            revertible: false, // Cash collections are not revertible
         });
         return Promise.resolve({ success: true, batchId: newBatch.id });
     },

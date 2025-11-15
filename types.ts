@@ -49,6 +49,8 @@ export interface Transaction {
     status: TransactionStatus;
     campaignName?: string;
     category?: TransactionCategory;
+    smsMessage?: SmsMessage;
+    revertible?: boolean;
 }
 
 export interface StagedTransaction extends Transaction {
