@@ -21,7 +21,7 @@ const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string }> = 
 
 const BottomNav: React.FC = () => {
     const { userRole } = useContext(AppContext);
-    const hasFinanceAccess = userRole === UserRole.Admin || userRole === UserRole.Finance;
+    const hasFinanceAccess = userRole === UserRole.Admin || userRole === UserRole.Treasurer;
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white/80 dark:bg-surface/80 backdrop-blur-md z-50 border-t border-gray-200 dark:border-gray-800">

@@ -1,3 +1,4 @@
+
 import { Account, Transaction, TransactionType, TransactionStatus, StagedTransaction, Expense, ExpenseStatus, MonthlyReportData, CashBatch, CashEntry, Budget, BudgetItem, Campaign, TransactionCategory } from '../types';
 
 const KSH = 'KSH';
@@ -65,7 +66,7 @@ const cashBatches: CashBatch[] = [
             { id: 2, member: 'Peter Parker', amount: 1500 },
             { id: 3, member: 'Anonymous', amount: 1000 },
         ],
-        createdBy: 'Finance User'
+        createdBy: 'Treasurer'
     },
     { 
         id: 'B-1690464000000', 
@@ -76,7 +77,7 @@ const cashBatches: CashBatch[] = [
             { id: 1, member: 'Youth Group Donation', amount: 5000 },
             { id: 2, member: 'John Doe', amount: 3250 },
         ],
-        createdBy: 'Finance User'
+        createdBy: 'Treasurer'
     }
 ];
 
@@ -201,7 +202,7 @@ const api = {
             notes: batchData.notes,
             total: batchData.total,
             entries: batchData.entries.map((e, i) => ({ ...e, id: `${newBatchId}-${i}` })),
-            createdBy: 'Finance User' // In a real app this would come from the session
+            createdBy: 'Treasurer' // In a real app this would come from the session
         };
         cashBatches.unshift(newBatch);
         // Also create a transaction for this

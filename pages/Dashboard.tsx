@@ -99,7 +99,7 @@ const Dashboard: React.FC = () => {
             setTransactions(transactionsData);
 
             // Fetch data specific to user role
-            if (userRole === UserRole.Admin || userRole === UserRole.Finance) {
+            if (userRole === UserRole.Admin || userRole === UserRole.Treasurer) {
                 const staged = await api.getStagedTransactions();
                 setStagedCount(staged.length);
             } else {
@@ -120,7 +120,7 @@ const Dashboard: React.FC = () => {
     }, [userRole]);
 
     const totalBalance = accounts?.reduce((sum, acc) => sum + acc.balance, 0) ?? 0;
-    const isFinanceUser = userRole === UserRole.Admin || userRole === UserRole.Finance;
+    const isFinanceUser = userRole === UserRole.Admin || userRole === UserRole.Treasurer;
 
     return (
         <Page title="Dashboard">

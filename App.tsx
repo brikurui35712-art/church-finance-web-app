@@ -15,7 +15,7 @@ import BottomNav from './components/BottomNav';
 import Header from './components/Header';
 
 const App: React.FC = () => {
-    const [userRole, setUserRole] = useState<UserRole>(UserRole.Finance);
+    const [userRole, setUserRole] = useState<UserRole>(UserRole.Treasurer);
     const [theme, setTheme] = useState<Theme>(() => {
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme && Object.values(Theme).includes(storedTheme as Theme)) {
@@ -51,7 +51,7 @@ const App: React.FC = () => {
         setTheme,
     }), [userRole, theme]);
 
-    const hasFinanceAccess = userRole === UserRole.Admin || userRole === UserRole.Finance;
+    const hasFinanceAccess = userRole === UserRole.Admin || userRole === UserRole.Treasurer;
 
     return (
         <AppContext.Provider value={contextValue}>
