@@ -1,3 +1,4 @@
+
 import { Account, Transaction, TransactionType, TransactionStatus, StagedTransaction, Expense, ExpenseStatus, MonthlyReportData, CashBatch, CashEntry, Budget, BudgetItem, Campaign, TransactionCategory, SmsMessage } from '../types';
 
 const KSH = 'KSH';
@@ -86,9 +87,9 @@ const budgets: Budget[] = [
         description: 'Youth Camp Catering', 
         plannedDate: '2024-08-15',
         items: [
-            { id: 'i1', name: 'Lunch Supplies', price: 40000 },
-            { id: 'i2', name: 'Snacks & Drinks', price: 25000 },
-            { id: 'i3', name: 'Cooking Staff', price: 20000 },
+            { id: 'i1', name: 'Lunch Supplies', price: 40000, quantity: 1, unitPrice: 40000 },
+            { id: 'i2', name: 'Snacks & Drinks', price: 25000, quantity: 1, unitPrice: 25000 },
+            { id: 'i3', name: 'Cooking Staff', price: 20000, quantity: 1, unitPrice: 20000 },
         ]
     },
     { 
@@ -96,9 +97,9 @@ const budgets: Budget[] = [
         description: 'Community Outreach Program', 
         plannedDate: '2024-09-05',
         items: [
-            { id: 'i4', name: 'Flyers and Posters', price: 10000 },
-            { id: 'i5', name: 'Food Donations', price: 30000 },
-            { id: 'i6', name: 'Volunteer T-shirts', price: 10000 },
+            { id: 'i4', name: 'Flyers and Posters', price: 10000, quantity: 1000, unitPrice: 10 },
+            { id: 'i5', name: 'Food Donations', price: 30000, quantity: 150, unitPrice: 200 },
+            { id: 'i6', name: 'Volunteer T-shirts', price: 10000, quantity: 20, unitPrice: 500 },
         ]
     },
     { 
@@ -106,8 +107,8 @@ const budgets: Budget[] = [
         description: 'Pastoral Staff Salaries', 
         plannedDate: '2024-08-30',
         items: [
-            { id: 'i7', name: 'Senior Pastor Salary', price: 150000 },
-            { id: 'i8', name: 'Associate Pastor Salary', price: 100000 },
+            { id: 'i7', name: 'Senior Pastor Salary', price: 150000, quantity: 1, unitPrice: 150000 },
+            { id: 'i8', name: 'Associate Pastor Salary', price: 100000, quantity: 1, unitPrice: 100000 },
         ]
     },
 ];
@@ -249,7 +250,14 @@ const api = {
         const newBudgetItem: Budget = { 
             ...item, 
             id: `bgt${Date.now()}`,
-            items: item.items.map((subItem, index) => ({...subItem, id: `i${Date.now()}-${index}`}))
+            items: item.items.map((subItem, index) => ({
+                ...subItem, 
+                id: `i${Date.now()}-${index}`,
+                // Ensure calculated fields are present if missing
+                quantity: subItem.quantity || 1,
+                unitPrice: subItem.unitPrice || subItem.price,
+                price: (subItem.quantity || 1) * (subItem.unitPrice || subItem.price)
+            }))
         };
         budgets.push(newBudgetItem);
         return Promise.resolve(newBudgetItem);
@@ -262,7 +270,15 @@ const api = {
     addBudgetItem: (budgetId: string, item: Omit<BudgetItem, 'id'>): Promise<BudgetItem> => {
         const budget = budgets.find(b => b.id === budgetId);
         if (budget) {
-            const newItem: BudgetItem = { ...item, id: `i${Date.now()}` };
+            const quantity = item.quantity || 1;
+            const unitPrice = item.unitPrice || item.price;
+            const newItem: BudgetItem = { 
+                ...item, 
+                id: `i${Date.now()}`,
+                quantity,
+                unitPrice,
+                price: quantity * unitPrice 
+            };
             budget.items.push(newItem);
             return Promise.resolve(newItem);
         } else {

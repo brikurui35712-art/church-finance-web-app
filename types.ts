@@ -104,6 +104,9 @@ export interface BudgetItem {
     id: string;
     name: string;
     price: number;
+    quantity: number;
+    unitPrice: number;
+    notes?: string;
 }
 
 export interface Budget {
